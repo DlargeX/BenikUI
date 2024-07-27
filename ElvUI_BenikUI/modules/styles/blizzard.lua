@@ -5,6 +5,8 @@ local S = E:GetModule('Skins')
 local _G = _G
 local pairs = pairs
 local C_TimerAfter = C_Timer.After
+local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+
 
 local MAX_STATIC_POPUPS = 4
 
@@ -44,8 +46,7 @@ local function LoadSkin()
 		_G.PaperDollFrame:BuiStyle("Outside")
 		_G.ReputationFrame:BuiStyle("Outside")
 		_G.TokenFrame:BuiStyle("Outside")
-		hooksecurefunc('ReputationFrame_Update', repUpdate)
-		hooksecurefunc('TokenFrame_Update', tokenUpdate)
+		_G.CurrencyTransferLog:BuiStyle("Outside")
 	end
 
 	if db.dressingroom then
@@ -168,16 +169,6 @@ local function LoadSkin()
 			local menuBackdrop = _G[listFrameName..'MenuBackdrop']
 			menuBackdrop:BuiStyle("Outside")
 		end)
-
-		local function StylePopups()
-			for i = 1, MAX_STATIC_POPUPS do
-				local frame = _G['ElvUI_StaticPopup'..i]
-				if frame and not frame.style then
-					frame:BuiStyle("Outside")
-				end
-			end
-		end
-		C_TimerAfter(1, StylePopups)
 	end
 
 	if db.nonraid then
@@ -205,10 +196,6 @@ local function LoadSkin()
 
 	if db.stable then
 		_G.StableFrame:BuiStyle("Outside")
-	end
-
-	if db.spellbook then
-		_G.SpellBookFrame:BuiStyle("Outside")
 	end
 
 	if db.tabard then

@@ -9,8 +9,10 @@ local getn = getn
 local tinsert, twipe, tsort, tostring = table.insert, table.wipe, table.sort, tostring
 
 local GameTooltip = _G.GameTooltip
-local GetFactionInfoByID = GetFactionInfoByID
-local GetFactionInfo = GetFactionInfo
+local GetFactionInfoByID = C_Reputation.GetFactionDataByID
+local GetFactionInfo = C_Reputation.GetFactionDataByIndex
+local GetNumFactions = C_Reputation.GetNumFactions
+local ExpandFactionHeader = C_Reputation.ExpandFactionHeader
 local IsPlayerAtEffectiveMaxLevel = IsPlayerAtEffectiveMaxLevel
 local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
@@ -91,9 +93,10 @@ function mod:UpdateReputations()
 		local _, factionID = unpack(info)
 
 		if factionID then
-			local name, _, standingID, barMin, barMax, barValue = GetFactionInfoByID(factionID)
+			local factionInfo = GetFactionInfoByID(factionID)
+			if factionInfo then
+				local name = factionInfo.name
 
-			if name then
 				if E.private.benikui.dashboards.reputations.chooseReputations[factionID] == true then
 					holder:SetShown(NotinInstance)
 
@@ -110,6 +113,10 @@ function mod:UpdateReputations()
 					local isMajorFaction = factionID and C_Reputation_IsMajorFaction(factionID)
 					local repInfo = factionID and C_GossipInfo_GetFriendshipReputation(factionID)
 					local currentValue, threshold, hasRewardPending, tooLowLevelForParagon
+					local standingID = factionInfo.reaction
+					local barMin = factionInfo.currentReactionThreshold
+					local barMax = factionInfo.nextReactionThreshold
+					local barValue = factionInfo.currentStanding
 
 					if repInfo and repInfo.friendshipFactionID > 0 then
 						standingLabel, barMin, barMax, barValue = repInfo.reaction, repInfo.reactionThreshold or 0, repInfo.nextThreshold or 1, repInfo.standing or 1
@@ -283,22 +290,22 @@ function mod:PopulateFactionData()
 	local headerIndex
 
 	while (factionIndex <= numFactions) do
-		local name, _, _, _, _, _, _, _, isHeader, isCollapsed, hasRep, _, isChild, factionID = GetFactionInfo(factionIndex)
-		if isHeader and isCollapsed then
+		local info = GetFactionInfo(factionIndex)
+		if info.isHeader and info.isCollapsed then
 			ExpandFactionHeader(factionIndex)
 			numFactions = GetNumFactions()
-			Collapsed[name] = true
+			Collapsed[info.name] = true
 		end
 
-		if isHeader and not (hasRep or isChild) then
-			tinsert(mod.ReputationsList, { name, factionID, factionIndex, isHeader, hasRep, isChild })
+		if info.isHeader and not (info.hasRep or info.isChild) then
+			tinsert(mod.ReputationsList, { info.name, info.factionID, factionIndex, info.isHeader, info.hasRep, info.isChild })
 			headerIndex = factionIndex
 		end
 
-		if not isHeader or not isChild or hasRep then -- hasRep needs to be passed here
-			if factionID then
-				mod.ReputationsList[tostring(factionID)] = name
-				tinsert(mod.ReputationsList, { name, factionID, headerIndex, isHeader, hasRep, isChild })
+		if not info.isHeader or not info.isChild or info.hasRep then -- hasRep needs to be passed here
+			if info.factionID then
+				mod.ReputationsList[tostring(info.factionID)] = info.name
+				tinsert(mod.ReputationsList, { info.name, info.factionID, headerIndex, info.isHeader, info.hasRep, info.isChild })
 			end
 		end
 
@@ -306,10 +313,10 @@ function mod:PopulateFactionData()
 	end
 
 	for k = 1, numFactions do
-		local name, _, _, _, _, _, _, _, isHeader, isCollapsed = GetFactionInfo(k)
-		if not name then
+		local info = GetFactionInfo(k)
+		if not info.name then
 			break
-		elseif isHeader and not isCollapsed and Collapsed[name] then
+		elseif info.isHeader and not info.isCollapsed and Collapsed[info.name] then
 			ExpandFactionHeader(k, false)
 		end
 	end
@@ -319,8 +326,8 @@ end
 
 function mod:UPDATE_FACTION(_, factionID)
 	if factionID and not mod.ReputationsList[tostring(factionID)] then
-		local name = GetFactionInfoByID(factionID)
-		if name then
+		local info = GetFactionInfoByID(factionID)
+		if info.name then
 			mod:PopulateFactionData()
 		end
 	end
