@@ -290,7 +290,7 @@ function mod:PopulateFactionData()
 
 	while (factionIndex <= numFactions) do
 		local info = GetFactionInfo(factionIndex)
-		if info and info.isHeader and info.isCollapsed then
+		if info.isHeader and info.isCollapsed then
 			ExpandFactionHeader(factionIndex)
 			numFactions = GetNumFactions()
 			Collapsed[info.name] = true
@@ -313,12 +313,10 @@ function mod:PopulateFactionData()
 
 	for k = 1, numFactions do
 		local info = GetFactionInfo(k)
-		if info then
-			if not info.name then
-				break
-			elseif info.isHeader and not info.isCollapsed and Collapsed[info.name] then
-				ExpandFactionHeader(k, false)
-			end
+		if not info.name then
+			break
+		elseif info.isHeader and not info.isCollapsed and Collapsed[info.name] then
+			ExpandFactionHeader(k, false)
 		end
 	end
 
@@ -329,13 +327,13 @@ function mod:UPDATE_FACTION(_, factionID)
 	if factionID and not mod.ReputationsList[tostring(factionID)] then
 		local info = GetFactionInfoByID(factionID)
 		if info.name then
-			mod:PopulateFactionData()
+			--mod:PopulateFactionData()
 		end
 	end
 	mod:UpdateReputations()
 end
 
-local function holderOnEnter(self)
+local function holderOnEnter()
 	local db = E.db.benikui.dashboards
 	local holder = _G.BUI_ReputationsDashboard
 
@@ -344,7 +342,7 @@ local function holderOnEnter(self)
 	end
 end
 
-local function holderOnLeave(self)
+local function holderOnLeave()
 	local db = E.db.benikui.dashboards
 	local holder = _G.BUI_ReputationsDashboard
 
