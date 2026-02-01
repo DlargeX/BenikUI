@@ -251,8 +251,6 @@ local function style_Collections()
 	end
 
 	_G.CollectionsJournal:BuiStyle("Outside")
-	_G.WardrobeFrame:BuiStyle("Outside")
-	_G.WardrobeOutfitEditFrame:BuiStyle("Outside")
 	if E.private.skins.blizzard.tooltip then
 		_G.PetJournalPrimaryAbilityTooltip:BuiStyle("Outside")
 	end
@@ -650,6 +648,24 @@ local function style_GuildControlUI()
 end
 S:AddCallbackForAddon("Blizzard_GuildControlUI", "BenikUI_GuildControlUI", style_GuildControlUI)
 
+-- HousingDashboard
+local function style_HousingDashboard()
+	if E.private.skins.blizzard.housing ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	local DashBoardFrame = _G.HousingDashboardFrame
+	DashBoardFrame:BuiStyle("Outside")
+	for i, tab in next, { DashBoardFrame.HouseInfoTabButton, DashBoardFrame.CatalogTabButton } do
+		if tab then
+			tab:CreateSoftShadow()
+		end
+	end
+end
+S:AddCallbackForAddon("Blizzard_HousingDashboard", "BenikUI_HousingDashboard", style_HousingDashboard)
+
 -- IslandsQueueUI
 local function style_IslandsQueueUI()
 	if E.private.skins.blizzard.islandQueue ~= true or E.private.skins.blizzard.enable ~= true or
@@ -755,7 +771,7 @@ local function style_MajorFactions()
 
 	_G.MajorFactionRenownFrame:BuiStyle("Outside")
 end
-S:AddCallbackForAddon("Blizzard_MajorFactions", "BenikUI_MajorFactions", style_MajorFactions)
+--S:AddCallbackForAddon("Blizzard_MajorFactions", "BenikUI_MajorFactions", style_MajorFactions)
 
 -- Blizzard Menus
 local function StyleFrame(frame)
@@ -982,6 +998,7 @@ local function style_PlayerSpells()
 
 	_G.PlayerSpellsFrame:BuiStyle("Outside")
 	_G.ClassTalentLoadoutImportDialog:BuiStyle("Outside")
+	_G.ClassTalentLoadoutCreateDialog:BuiStyle("Outside")
 end
 S:AddCallbackForAddon("Blizzard_PlayerSpells", "BenikUI_PlayerSpells", style_PlayerSpells)
 
@@ -1034,6 +1051,18 @@ local function style_TrainerUI()
 	_G.ClassTrainerFrame:BuiStyle("Outside")
 end
 S:AddCallbackForAddon("Blizzard_TrainerUI", "BenikUI_TrainerUI", style_TrainerUI)
+
+-- Transmog
+local function style_Transmog()
+	if E.private.skins.blizzard.transmogrify ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	_G.TransmogFrame:BuiStyle("Outside")
+end
+S:AddCallbackForAddon("Blizzard_Transmog", "BenikUI_Transmog", style_Transmog)
 
 -- UIPanels_Game
 local function style_UIPanels_Game()

@@ -84,6 +84,11 @@ local function StyleBlizzardTooltips()
 		for _, tt in pairs(tooltips) do
 			if tt and not tt.style then
 				tt:BuiStyle("Outside")
+
+				local CompareHeader = tt.CompareHeader
+				if CompareHeader then
+					CompareHeader:SetFrameLevel(tt.style:GetFrameLevel()+2)
+				end
 			end
 		end
 
@@ -126,7 +131,7 @@ function mod:RecolorTooltipStyle()
 
 		if GameTooltipStatusBar:IsShown() then
 			local _,tooltipUnit = _G.GameTooltip:GetUnit()
-			if tooltipUnit then
+			if tooltipUnit and E:NotSecretValue(tooltipUnit) then
 				if UnitIsPlayer(tooltipUnit) then
 					local _, tooltipUnitClass = UnitClass(tooltipUnit)
 					local tooltipUnitClassColor = E:ClassColor(tooltipUnitClass, true)

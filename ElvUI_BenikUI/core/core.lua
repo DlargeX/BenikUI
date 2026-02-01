@@ -10,6 +10,8 @@ local DisableAddOn = (C_AddOns and C_AddOns.DisableAddOn) or DisableAddOn
 local EnableAddOn = (C_AddOns and C_AddOns.EnableAddOn) or EnableAddOn
 local GetAddOnInfo = (C_AddOns and C_AddOns.GetAddOnInfo) or GetAddOnInfo
 local GetNumAddOns = (C_AddOns and C_AddOns.GetNumAddOns) or GetNumAddOns
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+local IsAddOnLoadable = C_AddOns.IsAddOnLoadable
 local ReloadUI = ReloadUI
 local SetCVar = SetCVar
 
@@ -24,8 +26,14 @@ BUI.ShadowMode = false
 BUI.AddonProfileKey = ''
 BINDING_HEADER_BENIKUI = BUI.Title
 
+local function IsAddonIncompatible(addon)
+    local loadable, reason = IsAddOnLoadable(addon)
+    return loadable == false and reason == "INCOMPATIBLE"
+end
+
 function BUI:IsAddOnEnabled(addon) -- Credit: Azilroka
-	return E:GetAddOnEnableState(addon, E.myguid) == 2
+	if IsAddonIncompatible(addon) then return end
+	return IsAddOnLoaded and E:GetAddOnEnableState(addon, E.myguid) == 2
 end
 
 -- Check other addons
@@ -37,9 +45,8 @@ BUI.LP = BUI:IsAddOnEnabled('ElvUI_LocPlus')
 BUI.NB = BUI:IsAddOnEnabled('ElvUI_NutsAndBolts')
 BUI.AS = BUI:IsAddOnEnabled('AddOnSkins')
 BUI.CT = BUI:IsAddOnEnabled('ClassTactics')
-BUI.IF = BUI:IsAddOnEnabled('InFlight_Load')
+BUI.IF = BUI:IsAddOnEnabled('InFlight')
 BUI.ZG = BUI:IsAddOnEnabled('ZygorGuidesViewer')
-BUI.WA = BUI:IsAddOnEnabled('WeakAuras')
 
 local classColor = E:ClassColor(E.myclass, true)
 
@@ -184,6 +191,20 @@ function BUI:LoadCommands()
 	self:RegisterChatCommand("benikui", "DasOptions")
 	self:RegisterChatCommand("benikuisetup", "SetupBenikUI")
 	self:RegisterChatCommand("buierror", "LuaError")
+
+	-- tag fixing commands
+	self:RegisterChatCommand("fixtags1", "FixTags1")
+	self:RegisterChatCommand("fixtags2", "FixTags2")
+	self:RegisterChatCommand("fixtags3", "FixTags3")
+end
+
+do -- Midnight API Fix. Credit: fang (WindTools)
+	local BackdropTemplateMixin_SetupTextureCoordinates = _G.BackdropTemplateMixin.SetupTextureCoordinates
+	function _G.BackdropTemplateMixin:SetupTextureCoordinates(...)
+		if E:NotSecretValue(self:GetWidth()) then
+			BackdropTemplateMixin_SetupTextureCoordinates(self, ...)
+		end
+	end
 end
 
 function BUI:Initialize()

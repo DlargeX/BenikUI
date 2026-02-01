@@ -203,7 +203,6 @@ local AddonsToHide = {
 	{'WorldQuestTracker', 'WorldQuestTrackerFinderFrame'},
 	{'XIV_Databar', 'XIV_Databar'},
 	{'VuhDo', 'VuhDoBuffWatchMainFrame'},
-	{'WeakAuras', 'WeakAurasFrame'},
 	{'HeroRotation','HeroRotation_ToggleIconFrame'},
 	{'!KalielsTracker','!KalielsTrackerFrame'},
 	{'!KalielsTracker','!KalielsTrackerScrollChild'},
@@ -544,14 +543,12 @@ function mod:Toggle()
 		mod:RegisterEvent("LFG_PROPOSAL_SHOW", "OnEvent")
 		mod:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", "OnEvent")
 		mod:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-		BUI:LoadInFlightProfile(true)
 	else
 		mod:UnregisterEvent("UPDATE_BONUS_ACTIONBAR")
 		mod:UnregisterEvent("UPDATE_MULTI_CAST_ACTIONBAR")
 		mod:UnregisterEvent("LFG_PROPOSAL_SHOW")
 		mod:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
 		mod:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		BUI:LoadInFlightProfile(false)
 	end
 end
 

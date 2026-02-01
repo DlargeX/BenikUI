@@ -4,11 +4,8 @@ local S = E:GetModule('Skins')
 
 local _G = _G
 local pairs = pairs
-local C_TimerAfter = C_Timer.After
 local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
 
-
-local MAX_STATIC_POPUPS = 4
 
 local function LoadSkin()
 	if E.db.benikui.general.benikuiStyle ~= true then return end
@@ -32,12 +29,6 @@ local function LoadSkin()
 		_G.SplashFrame.backdrop:BuiStyle("Outside")
 	end
 
-	local function repUpdate()
-		if _G.ReputationDetailFrame then
-			_G.ReputationDetailFrame:BuiStyle("Outside")
-		end
-	end
-
 	if db.character then
 		_G.PaperDollFrame:BuiStyle("Outside")
 		_G.ReputationFrame:BuiStyle("Outside")
@@ -48,14 +39,11 @@ local function LoadSkin()
 
 	if db.dressingroom then
 		_G.DressUpFrame:BuiStyle("Outside")
-		_G.DressUpFrame.OutfitDetailsPanel:BuiStyle("Outside")
 		_G.DressUpFrame.SetSelectionPanel:BuiStyle("Outside")
-		_G.WardrobeOutfitEditFrame:BuiStyle("Outside")
 	end
 
 	if db.editor then
 		_G.EditModeManagerFrame.backdrop:BuiStyle("Outside")
-		_G.EditModeNewLayoutDialog.backdrop:BuiStyle("Outside")
 		_G.EditModeUnsavedChangesDialog.backdrop:BuiStyle("Outside")
 		_G.EditModeImportLayoutDialog.backdrop:BuiStyle("Outside")
 		_G.EditModeSystemSettingsDialog.backdrop:BuiStyle("Outside")
