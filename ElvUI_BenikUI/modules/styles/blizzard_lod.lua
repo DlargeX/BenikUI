@@ -242,6 +242,20 @@ local function style_ClassTalents()
 end
 S:AddCallbackForAddon("Blizzard_ClassTalentUI", "BenikUI_ClassTalents", style_ClassTalents)
 
+-- ClickBindingUI
+local function style_ClickBinding()
+	if E.private.skins.blizzard.binding ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	local frame = _G.ClickBindingFrame
+	frame:BuiStyle("Outside")
+	frame.TutorialFrame:BuiStyle("Outside")
+end
+S:AddCallbackForAddon("Blizzard_ClickBindingUI", "BenikUI_ClickBindingUI", style_ClickBinding)
+
 -- Collections
 local function style_Collections()
 	if E.private.skins.blizzard.collections ~= true or E.private.skins.blizzard.enable ~= true or
@@ -356,6 +370,22 @@ local function style_CovenantSanctum()
 end
 S:AddCallbackForAddon("Blizzard_CovenantSanctum", "BenikUI_CovenantSanctum", style_CovenantSanctum)
 
+-- DamageMeter
+function BUI:ApplyDamageMeterStyle(window)
+	if E.private.skins.blizzard.damageMeter ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	if not window or not window.backdrop then return end
+
+	if not window.backdrop.style then
+		window.backdrop:BuiStyle("Outside")
+	end
+end
+hooksecurefunc(S, "DamageMeter_HandleBackground", BUI.ApplyDamageMeterStyle)
+
 -- DeathRecap
 local function style_DeathRecap()
 	if E.private.skins.blizzard.deathRecap ~= true or E.private.skins.blizzard.enable ~= true or
@@ -407,10 +437,12 @@ local function style_EncounterJournal()
 
 	_G.EncounterJournal:BuiStyle("Outside")
 
-	for _, name in next, { 'overviewTab', 'modelTab', 'bossTab', 'lootTab' } do
-		local tab = _G.EncounterJournal.encounter.info[name]
-		if tab then
-			tab:CreateSoftShadow()
+	if BUI.ShadowMode then
+		for _, name in next, { 'overviewTab', 'modelTab', 'bossTab', 'lootTab' } do
+			local tab = _G.EncounterJournal.encounter.info[name]
+			if tab then
+				tab.backdrop:CreateSoftShadow()
+			end
 		end
 	end
 
@@ -603,11 +635,14 @@ local function style_GuildBankUI()
 	end
 
 	_G.GuildBankFrame:BuiStyle("Outside")
-	for i = 1, 8 do
-		local tab = _G['GuildBankTab'..i]
-		local button = tab.Button
-		button:SetTemplate("Transparent")
-		button:CreateSoftShadow()
+
+	if BUI.ShadowMode then
+		for i = 1, 8 do
+			local tab = _G['GuildBankTab'..i]
+			local button = tab.Button
+			button:SetTemplate("Transparent")
+			button:CreateSoftShadow()
+		end
 	end
 end
 S:AddCallbackForAddon("Blizzard_GuildBankUI", "BenikUI_GuildBankUI", style_GuildBankUI)
@@ -658,13 +693,123 @@ local function style_HousingDashboard()
 
 	local DashBoardFrame = _G.HousingDashboardFrame
 	DashBoardFrame:BuiStyle("Outside")
-	for i, tab in next, { DashBoardFrame.HouseInfoTabButton, DashBoardFrame.CatalogTabButton } do
-		if tab then
-			tab:CreateSoftShadow()
+
+	if BUI.ShadowMode then
+		for i, tab in next, { DashBoardFrame.HouseInfoTabButton, DashBoardFrame.CatalogTabButton } do
+			if tab then
+				tab.backdrop:CreateSoftShadow()
+			end
 		end
 	end
 end
 S:AddCallbackForAddon("Blizzard_HousingDashboard", "BenikUI_HousingDashboard", style_HousingDashboard)
+
+-- HousingBulletinBoard
+local function style_HousingBulletinBoard()
+	if E.private.skins.blizzard.housing ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	local BulletinBoardFrame = _G.HousingBulletinBoardFrame
+	if BulletinBoardFrame then
+		BulletinBoardFrame:BuiStyle("Outside")
+	end
+end
+S:AddCallbackForAddon("Blizzard_HousingBulletinBoard", "BenikUI_HousingBulletinBoard", style_HousingBulletinBoard)
+
+-- HousingCornerstone
+local function style_HousingCornerstone()
+	if E.private.skins.blizzard.housing ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	local CornerVisitorFrame = _G.HousingCornerstoneVisitorFrame
+	if CornerVisitorFrame then
+		CornerVisitorFrame.backdrop:BuiStyle("Outside")
+	end
+
+	local CornerInfoFrame = _G.HousingCornerstoneHouseInfoFrame
+	if CornerInfoFrame then
+		CornerInfoFrame.backdrop:BuiStyle("Outside")
+	end
+
+	local PurchaseFrame = _G.HousingCornerstonePurchaseFrame
+	if PurchaseFrame then
+		PurchaseFrame.backdrop:BuiStyle("Outside")
+	end
+
+	local SaleSign = PurchaseFrame.ForSaleSign
+	SaleSign:StripTextures()
+	SaleSign:SetTemplate()
+	SaleSign:OffsetFrameLevel(2, PurchaseFrame.backdrop.style)
+
+	local MoveHouseConfirmation = _G.MoveHouseConfirmationDialog
+	if MoveHouseConfirmation then
+		MoveHouseConfirmation.backdrop:BuiStyle("Outside")
+	end
+end
+S:AddCallbackForAddon("Blizzard_HousingCornerstone", "BenikUI_HousingCornerstone", style_HousingCornerstone)
+
+-- HouseEditor
+local function style_HouseEditor()
+	if E.private.skins.blizzard.housing ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	local EditorFrame = _G.HouseEditorFrame
+	EditorFrame.ExteriorCustomizationModeFrame.FixtureOptionList:BuiStyle("Outside")
+	local StoragePanel = EditorFrame.StoragePanel
+	StoragePanel:BuiStyle("Outside")
+
+	if BUI.ShadowMode then
+		StoragePanel.CollapseButton:CreateSoftShadow()
+		EditorFrame.StorageButton:CreateSoftShadow()
+	end
+end
+S:AddCallbackForAddon("Blizzard_HouseEditor", "BenikUI_HouseEditor", style_HouseEditor)
+
+-- HousingHouseFinder
+local function style_HousingHouseFinder()
+	if E.private.skins.blizzard.housing ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	_G.HouseFinderFrame:BuiStyle("Outside")
+end
+S:AddCallbackForAddon("Blizzard_HousingHouseFinder", "BenikUI_HousingHouseFinder", style_HousingHouseFinder)
+
+-- HousingHouseSettings
+local function style_HousingHouseSettings()
+	if E.private.skins.blizzard.housing ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	_G.HousingHouseSettingsFrame:BuiStyle("Outside")
+	_G.AbandonHouseConfirmationDialog:BuiStyle("Outside")
+end
+S:AddCallbackForAddon("Blizzard_HousingHouseSettings", "BenikUI_HousingHouseSettings", style_HousingHouseSettings)
+
+-- HousingModelPreview
+local function style_HousingModelPreview()
+	if E.private.skins.blizzard.housing ~= true or E.private.skins.blizzard.enable ~= true or
+		E.db.benikui.general.benikuiStyle ~= true
+	then
+		return
+	end
+
+	_G.HousingModelPreviewFrame.backdrop:BuiStyle("Outside")
+end
+S:AddCallbackForAddon("Blizzard_HousingModelPreview", "BenikUI_HousingModelPreview", style_HousingModelPreview)
 
 -- IslandsQueueUI
 local function style_IslandsQueueUI()
@@ -760,18 +905,6 @@ local function style_MacroUI()
 	_G.MacroPopupFrame:BuiStyle("Outside")
 end
 S:AddCallbackForAddon("Blizzard_MacroUI", "BenikUI_MacroUI", style_MacroUI)
-
--- Major Factions
-local function style_MajorFactions()
-	if E.private.skins.blizzard.majorFactions ~= true or E.private.skins.blizzard.enable ~= true or
-		E.db.benikui.general.benikuiStyle ~= true
-	then
-		return
-	end
-
-	_G.MajorFactionRenownFrame:BuiStyle("Outside")
-end
---S:AddCallbackForAddon("Blizzard_MajorFactions", "BenikUI_MajorFactions", style_MajorFactions)
 
 -- Blizzard Menus
 local function StyleFrame(frame)
@@ -996,9 +1129,15 @@ local function style_PlayerSpells()
 		return
 	end
 
-	_G.PlayerSpellsFrame:BuiStyle("Outside")
+	local PlayerSpellsFrame = _G.PlayerSpellsFrame
+	PlayerSpellsFrame:BuiStyle("Outside")
+
+	local TalentsFrame = PlayerSpellsFrame.TalentsFrame
+	TalentsFrame.PvPTalentList.backdrop:BuiStyle("Outside")
+
 	_G.ClassTalentLoadoutImportDialog:BuiStyle("Outside")
 	_G.ClassTalentLoadoutCreateDialog:BuiStyle("Outside")
+	_G.HeroTalentsSelectionDialog:BuiStyle("Outside")
 end
 S:AddCallbackForAddon("Blizzard_PlayerSpells", "BenikUI_PlayerSpells", style_PlayerSpells)
 
@@ -1077,38 +1216,6 @@ local function style_UIPanels_Game()
 	_G.GearManagerPopupFrame:BuiStyle("Outside")
 end
 S:AddCallbackForAddon("Blizzard_UIPanels_Game", "BenikUI_UIPanels_Game", style_UIPanels_Game)
-
--- VoidStorageUI
-local function style_VoidStorageUI()
-	if E.private.skins.blizzard.voidstorage ~= true or E.private.skins.blizzard.enable ~= true or
-		E.db.benikui.general.benikuiStyle ~= true
-	then
-		return
-	end
-
-	local frame = _G.VoidStorageFrame
-	frame:BuiStyle("Outside")
-	for i = 1, 2 do
-		local tab = frame["Page" .. i]
-		tab:SetTemplate("Transparent")
-		tab:CreateSoftShadow()
-	end
-end
-S:AddCallbackForAddon("Blizzard_VoidStorageUI", "BenikUI_VoidStorageUI", style_VoidStorageUI)
-
--- WarboardUI
-local function style_WarboardUI()
-	if E.private.skins.blizzard.warboard ~= true or E.private.skins.blizzard.enable ~= true or
-		E.db.benikui.general.benikuiStyle ~= true
-	then
-		return
-	end
-
-	local frame = _G.WarboardQuestChoiceFrame
-	frame:BuiStyle("Outside")
-	frame.style:SetFrameLevel(1)
-end
-S:AddCallbackForAddon("Blizzard_WarboardUI", "BenikUI_WarboardUI", style_WarboardUI)
 
 -- WeeklyRewards
 local function style_WeeklyRewards()
