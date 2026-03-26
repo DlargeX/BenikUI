@@ -250,11 +250,14 @@ L['Enable Class color on health border, when mouse over'] = "Aktiviert den Klass
 
 -- Widget Bars
 L['Widget Bars'] = "Widget Leisten"
-L['BenikUI Maw Bar'] = "BenikUI Schlundleiste"
+L['Maw Bar'] = "Schlundleiste"
+L['Prey Bar'] = true
 L['Color by Tier'] = "Farbe nach Stufe"
 L['Text yOffset'] = "Text Y-Versatz"
 L['Half Bar'] = "Halbe Leisten"
 L["Percent"] = "Prozent"
+L['Preview Bar'] = true
+L['Hide Preview'] = true
 
 -- Information
 L['Information'] = "Informationen"

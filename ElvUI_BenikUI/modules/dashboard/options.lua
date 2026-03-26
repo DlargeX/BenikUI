@@ -4,7 +4,7 @@ local mod = BUI:GetModule('Dashboards')
 
 local hooksecurefunc = hooksecurefunc
 
-local tinsert, twipe, ipairs, next = table.insert, table.wipe, ipairs, next
+local tinsert, pairs, ipairs, next = table.insert, pairs, ipairs, next
 local format, tostring, tonumber, strmatch, type = format, tostring, tonumber, strmatch, type
 
 local AceGUIWidgetLSMlists = AceGUIWidgetLSMlists
@@ -107,7 +107,9 @@ local function UpdateTokenOptions()
 	local optionOrder = 1
 
 	config.args = config.args or {}
-	twipe(config.args)
+	for k in pairs(config.args) do
+		if tonumber(k) then config.args[k] = nil end
+	end
 
 	local foldHeaderTo = {}
 	local lastRealHeaderIndex
@@ -193,17 +195,20 @@ local function UpdateProfessionOptions()
 			},
 		}
 		local proftable = { GetProfessions() }
-		for _, id in ipairs(proftable) do
-			local pname, icon = GetProfessionInfo(id)
-			if pname then
-				config.args.choosePofessions.args[pname] = {
-					order = optionOrder + 2,
-					type = 'toggle',
-					name = '|T'..icon..':18|t '..pname,
-					desc = format('%s %s', L['Enable/Disable'], pname),
-					get = function(info) return E.private.benikui.dashboards.professions.choosePofessions[id] end,
-					set = function(info, value) E.private.benikui.dashboards.professions.choosePofessions[id] = value mod:UpdateProfessions() end,
-				}
+		for i = 1, 5 do
+			local id = proftable[i]
+			if id then
+				local pname, icon = GetProfessionInfo(id)
+				if pname then
+					config.args.choosePofessions.args[pname] = {
+						order = optionOrder + 2,
+						type = 'toggle',
+						name = '|T'..icon..':18|t '..pname,
+						desc = format('%s %s', L['Enable/Disable'], pname),
+						get = function(info) return E.private.benikui.dashboards.professions.choosePofessions[id] end,
+						set = function(info, value) E.private.benikui.dashboards.professions.choosePofessions[id] = value mod:UpdateProfessions() end,
+					}
+				end
 			end
 		end
 	else

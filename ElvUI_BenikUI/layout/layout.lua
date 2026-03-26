@@ -20,13 +20,9 @@ local EncounterJournal_LoadUI = EncounterJournal_LoadUI
 local C_TimerAfter = C_Timer.After
 local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
 
-local selectioncolor = selectioncolor
 local MAINMENU_BUTTON = MAINMENU_BUTTON
 local LFG_TITLE = LFG_TITLE
 local ADVENTURE_JOURNAL = ADVENTURE_JOURNAL
-
--- GLOBALS: AddOnSkins
--- GLOBALS: BuiMiddleDTPanel, BuiGameClickMenu
 
 local dtButtons = {}
 
@@ -112,6 +108,7 @@ end
 
 function mod:ToggleTransparency()
 	local db = E.db.benikui.datatexts.chat
+	local shadows = E.db.benikui.general.shadows
 	local buiLeftDT = _G.BuiLeftChatDTPanel
 	local buiRightDT = _G.BuiRightChatDTPanel
 
@@ -120,13 +117,13 @@ function mod:ToggleTransparency()
 		buiRightDT:SetTemplate('NoBackdrop')
 		for i = 1, NUM_BUTTONS do
 			dtButtons[i]:SetTemplate('NoBackdrop')
-			if BUI.ShadowMode then
+			if shadows and dtButtons[i].shadow then
 				dtButtons[i].shadow:Hide()
 			end
 		end
-		if BUI.ShadowMode then
-			buiLeftDT.shadow:Hide()
-			buiRightDT.shadow:Hide()
+		if shadows then
+			if buiLeftDT.shadow then buiLeftDT.shadow:Hide() end
+			if buiRightDT.shadow then buiRightDT.shadow:Hide() end
 		end
 	else
 		if db.transparent then
@@ -142,16 +139,19 @@ function mod:ToggleTransparency()
 				dtButtons[i]:SetTemplate('Default', true)
 			end
 		end
-		if BUI.ShadowMode then
-			buiLeftDT.shadow:Show()
-			buiRightDT.shadow:Show()
+
+		if shadows then
+			if buiLeftDT.shadow then buiLeftDT.shadow:Show() end
+			if buiRightDT.shadow then buiRightDT.shadow:Show() end
 			for i = 1, NUM_BUTTONS do
-				dtButtons[i].shadow:Show()
+				if dtButtons[i].shadow then
+					dtButtons[i].shadow:Show()
+				end
 			end
 		end
 	end
 
-	if not BUI.ShadowMode then return end
+	if not shadows then return end
 
 	local leftChatDataPanel = _G.LeftChatDataPanel
 	local rightChatDataPanel = _G.RightChatDataPanel
@@ -245,7 +245,7 @@ function mod:CreateLayout()
 	buiLeftDT:Point('TOPLEFT', elvuiLeftChatPanel, 'BOTTOMLEFT', (SPACING +PANEL_HEIGHT), -SPACING)
 	buiLeftDT:Point('BOTTOMRIGHT', elvuiLeftChatPanel, 'BOTTOMRIGHT', -(SPACING +PANEL_HEIGHT), -PANEL_HEIGHT -SPACING)
 	buiLeftDT:BuiStyle('Outside', nil, false, true)
-	DT:RegisterPanel(BuiLeftChatDTPanel, 3, 'ANCHOR_BOTTOM', 0, -4)
+	DT:RegisterPanel(buiLeftDT, 3, 'ANCHOR_BOTTOM', 0, -4)
 
 	-- Right dt panel
 	local buiRightDT = CreateFrame('Frame', 'BuiRightChatDTPanel', E.UIParent)
@@ -254,7 +254,7 @@ function mod:CreateLayout()
 	buiRightDT:Point('TOPLEFT', elvuiRightChatPanel, 'BOTTOMLEFT', (SPACING +PANEL_HEIGHT), -SPACING)
 	buiRightDT:Point('BOTTOMRIGHT', elvuiRightChatPanel, 'BOTTOMRIGHT', -(SPACING +PANEL_HEIGHT), -PANEL_HEIGHT -SPACING)
 	buiRightDT:BuiStyle('Outside', nil, false, true)
-	DT:RegisterPanel(BuiRightChatDTPanel, 3, 'ANCHOR_BOTTOM', 0, -4)
+	DT:RegisterPanel(buiRightDT, 3, 'ANCHOR_BOTTOM', 0, -4)
 
 	-- dummy frame for chat/threat (left)
 	dummyChatFrame:SetFrameStrata('LOW')
@@ -308,7 +308,7 @@ function mod:CreateLayout()
 				else
 					self.arrow:Hide()
 					self.btn:Show()
-					self:SetScript('OnClick', function(self, btn)
+					self:SetScript('OnClick', function(_, btn)
 						if btn == 'LeftButton' then
 							E:ToggleOptions()
 						else
@@ -324,7 +324,7 @@ function mod:CreateLayout()
 									end
 								end
 							else
-								DT:ToggleBattleStats()
+								--DT:ToggleBattleStats()
 							end
 						end
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
@@ -355,7 +355,7 @@ function mod:CreateLayout()
 				self.btn:SetVertexColor(1, 1, 1, .7)
 				GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT', 0, 2 )
 				GameTooltip:ClearLines()
-				GameTooltip:AddLine(MAINMENU_BUTTON, selectioncolor)
+				GameTooltip:AddLine(MAINMENU_BUTTON, 1, 1, 1)
 				GameTooltip:Show()
 				if InCombatLockdown() then GameTooltip:Hide() end
 			end)
@@ -381,7 +381,7 @@ function mod:CreateLayout()
 					self.btn:Hide()
 					self:SetScript('OnClick', ChatButton_OnClick)
 				else
-					self:SetScript('OnClick', function(self)
+					self:SetScript('OnClick', function()
 						ShowUIPanel(_G.AddonList)
 					end)
 				end
@@ -407,7 +407,7 @@ function mod:CreateLayout()
 			dtButtons[i]:SetParent(buiLeftDT)
 			dtButtons[i].btn:SetTexture(lfgIcon)
 
-			dtButtons[i]:SetScript('OnClick', function(self, btn)
+			dtButtons[i]:SetScript('OnClick', function(_, btn)
 				if btn == "LeftButton" then
 					PVEFrame_ToggleFrame()
 				elseif btn == "RightButton" then
@@ -444,10 +444,10 @@ function mod:CreateLayout()
 	elvuiTopPanel:SetFrameLevel(0)
 	elvuiTopPanel:SetFrameStrata('BACKGROUND')
 
-	elvuiLeftChatPanel.backdrop:BuiStyle('Outside')
-	elvuiRightChatPanel.backdrop:BuiStyle('Outside')
+	elvuiLeftChatPanel.backdrop:BuiStyle()
+	elvuiRightChatPanel.backdrop:BuiStyle()
 
-	if BUI.ShadowMode then
+	if E.db.benikui.general.shadows then
 		elvuiMinimapPanel:CreateSoftShadow()
 		leftChatDataPanel:CreateSoftShadow()
 		leftChatToggleButton:CreateSoftShadow()
@@ -458,13 +458,13 @@ function mod:CreateLayout()
 	-- Minimap elements styling
 	if E.private.general.minimap.enable then
 		local elvuiMinimapRightClickMenu = _G.MinimapRightClickMenu
-		elvuiMinimap.backdrop:BuiStyle('Outside')
-		elvuiMinimapRightClickMenu:BuiStyle('Outside')
+		elvuiMinimap.backdrop:BuiStyle()
+		elvuiMinimapRightClickMenu:BuiStyle()
 		mod:ResizeMinimapPanels()
 	end
 
 	local elvuiCopyChatFrame = _G.ElvUI_CopyChatFrame
-	if elvuiCopyChatFrame then elvuiCopyChatFrame:BuiStyle('Outside') end
+	if elvuiCopyChatFrame then elvuiCopyChatFrame:BuiStyle() end
 
 	self:ToggleTransparency()
 end

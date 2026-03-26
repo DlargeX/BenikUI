@@ -6,7 +6,7 @@ local hooksecurefunc = hooksecurefunc
 local function StyleAlert(frame)
 	if frame.backdrop then
 		if not frame.backdrop.style then
-			frame.backdrop:BuiStyle('Outside')
+			frame.backdrop:BuiStyle()
 		end
 	end
 end
@@ -46,10 +46,12 @@ function mod:styleAlertFrames()
 	hooksecurefunc(_G.EntitlementDeliveredAlertSystem, "setUpFunction", StyleAlert)
 	hooksecurefunc(_G.RafRewardDeliveredAlertSystem, "setUpFunction", StyleAlert)
 	hooksecurefunc(_G.HousingItemEarnedAlertFrameSystem, "setUpFunction", StyleAlert)
+	hooksecurefunc(_G.InitiativeTaskCompleteAlertFrameSystem, 'setUpFunction', StyleAlert)
 
 	-- Professions
 	hooksecurefunc(_G.DigsiteCompleteAlertSystem, "setUpFunction", StyleAlert)
 	hooksecurefunc(_G.NewRecipeLearnedAlertSystem, "setUpFunction", StyleAlert)
+	hooksecurefunc(_G.SkillLineSpecsUnlockedAlertSystem, 'setUpFunction', StyleAlert)
 
 	-- Pets/Mounts/Toys
 	hooksecurefunc(_G.NewPetAlertSystem, "setUpFunction", StyleAlert)
@@ -63,8 +65,8 @@ function mod:styleAlertFrames()
 	hooksecurefunc(_G.NewWarbandSceneAlertSystem, 'setUpFunction', StyleAlert)
 
 	local BonusRollMoneyWonFrame = _G.BonusRollMoneyWonFrame
-	BonusRollMoneyWonFrame.backdrop:BuiStyle('Outside')
+	BonusRollMoneyWonFrame.backdrop:BuiStyle()
 
 	local BonusRollLootWonFrame = _G.BonusRollLootWonFrame
-	BonusRollLootWonFrame.backdrop:BuiStyle('Outside')
+	BonusRollLootWonFrame.backdrop:BuiStyle()
 end

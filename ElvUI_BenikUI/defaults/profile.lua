@@ -171,11 +171,6 @@ P['benikui'] = {
 		},
 		['infoPanel'] = {
 			['fixInfoPanel'] = true,
-			['texture'] = 'BuiEmpty',
-			['enableColor'] = false,
-			['customColor'] = 2,
-			['color'] = {r = .9, g = .7, b = 0, a = .7},
-			['groupColor'] = {r = .9, g = .7, b = 0, a = .7},
 		},
 		['castbar'] = {
 			['text'] = {
@@ -232,6 +227,7 @@ P['benikui'] = {
 			['allthethings'] = true,
 			['tinyinspect'] = true,
 			['arkinventory'] = true,
+			['storyline'] = true,
 			['classTactics'] = true,
 			['hekili'] = true,
 			['wowpro'] = true,
@@ -244,6 +240,8 @@ P['benikui'] = {
 			['kt'] = true,
 			['rt'] = true,
 			['tomtom'] = true,
+			['ba'] = true,
+			['alltheThings'] = true,
 		},
 	},
 
@@ -315,6 +313,17 @@ P['benikui'] = {
 			['fontsize'] = E.db.datatexts.fontSize,
 			['fontflags'] = E.db.datatexts.fontOutline,
 			['textFormat'] = 'PERCENT',
+		},
+
+		['preyBar'] = {
+			['enable'] = true,
+			['width'] = 222,
+			['height'] = 5,
+			['textYoffset'] = 13,
+			['useDTfont'] = true,
+			['font'] = E.db.datatexts.font,
+			['fontsize'] = E.db.datatexts.fontSize,
+			['fontflags'] = E.db.datatexts.fontOutline,
 		},
 
 		['halfBar'] = {

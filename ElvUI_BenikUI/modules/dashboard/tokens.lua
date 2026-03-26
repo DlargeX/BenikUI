@@ -20,7 +20,6 @@ local C_CurrencyInfo_IsAccountTransferableCurrency = C_CurrencyInfo.IsAccountTra
 local GetExpansionLevel = GetExpansionLevel
 local IsShiftKeyDown = IsShiftKeyDown
 local InCombatLockdown = InCombatLockdown
-local IsInInstance = IsInInstance
 local BreakUpLargeNumbers = BreakUpLargeNumbers
 local LFG_TYPE_DUNGEON = LFG_TYPE_DUNGEON
 local MISCELLANEOUS = MISCELLANEOUS
@@ -84,16 +83,23 @@ end
 local function barOnLeave(self)
 	local db = E.db.benikui.dashboards
 	local BreakAmount = BreakUpLargeNumbers(self.amount)
+	local TextMaxValue, displayString
 
-	if self.totalMax == 0 then
-		self.Text:SetFormattedText('%s', BreakAmount)
+	if db.tokens.weekly and self.weeklyMax and self.weeklyMax > 0 then
+		TextMaxValue = self.weeklyMax
+	elseif self.totalMax and self.totalMax > 0 then
+		TextMaxValue = self.totalMax
 	else
-		if db.tokens.weekly and self.weeklyMax > 0 then
-			self.Text:SetFormattedText('%s / %s', BreakAmount, self.weeklyMax)
-		else
-			self.Text:SetFormattedText('%s / %s', BreakAmount, self.totalMax)
-		end
+		TextMaxValue = self.amount
 	end
+
+	if TextMaxValue == 0 or TextMaxValue == self.amount then
+		displayString = format('%s', BreakAmount)
+	else
+		displayString = format('%s / %s', BreakAmount, TextMaxValue)
+	end
+
+	self.Text:SetText(displayString)
 
 	GameTooltip:Hide()
 
@@ -134,9 +140,6 @@ function mod:UpdateTokens()
 
 	if not db.tokens.enable then holder:Hide() return end
 
-	local inInstance = IsInInstance()
-	local NotinInstance = not (db.tokens.instance and inInstance)
-
 	if(tokensDB[1]) then
 		for i = 1, #tokensDB do
 			tokensDB[i]:Hide()
@@ -157,7 +160,7 @@ function mod:UpdateTokens()
 
 				if E.private.benikui.dashboards.tokens.chooseTokens[id] == true then
 					if db.tokens.zeroamount or amount > 0 then
-						holder:SetShown(NotinInstance)
+						holder:SetShown(mod:ShouldShowDashboard('tokens'))
 
 						if db.tokens.orientation == 'BOTTOM' then
 							holder:Height(((DASH_HEIGHT + (E.PixelMode and 1 or DASH_SPACING)) * (#tokensDB + 1)) + DASH_SPACING + (E.PixelMode and 0 or 2))
@@ -170,20 +173,25 @@ function mod:UpdateTokens()
 						local bar = mod:CreateDashboard(holder, 'tokens', true, false, true)
 						local BarColor = (db.barColor == 1 and classColor) or db.customBarColor
 						local TextColor = (db.textColor == 1 and classColor) or db.customTextColor
-						local BarMaxValue = (totalMax == 0 and amount) or ((db.tokens.weekly and weeklyMax > 0 and weeklyMax) or totalMax)
-						local TextMaxValue = 0
+						local BarMaxValue, TextMaxValue
 						local BreakAmount = BreakUpLargeNumbers(amount)
 						local isValidCurrency = C_CurrencyInfo_IsAccountTransferableCurrency(id)
 						local displayString = ''
 
-						if totalMax == 0 then
+						if db.tokens.weekly and weeklyMax and weeklyMax > 0 then
+							BarMaxValue = weeklyMax
+							TextMaxValue = weeklyMax
+						elseif totalMax and totalMax > 0 then
+							BarMaxValue = totalMax
+							TextMaxValue = totalMax
+						else
+							BarMaxValue = amount > 0 and amount or 1
+							TextMaxValue = amount
+						end
+
+						if TextMaxValue == 0 or TextMaxValue == amount then
 							displayString = format('%s', BreakAmount)
 						else
-							if db.tokens.weekly and weeklyMax > 0 then
-								TextMaxValue = weeklyMax
-							else
-								TextMaxValue = totalMax
-							end
 							displayString = format('%s / %s', BreakAmount, TextMaxValue)
 						end
 

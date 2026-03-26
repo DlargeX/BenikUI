@@ -1,6 +1,8 @@
 local BUI, E, L, V, P, G = unpack((select(2, ...)))
 local mod = BUI:GetModule('Styles')
+local S = E:GetModule('Skins')
 
+local next = next
 local CreateFrame = CreateFrame
 
 local function StyleDBM_Options()
@@ -11,7 +13,7 @@ local function StyleDBM_Options()
 	local DBM_GUI_OptionsFrame = _G.DBM_GUI_OptionsFrame
 	DBM_GUI_OptionsFrame:StripTextures()
 	DBM_GUI_OptionsFrame:SetTemplate("Transparent")
-	DBM_GUI_OptionsFrame:BuiStyle("Outside")
+	DBM_GUI_OptionsFrame:BuiStyle()
 end
 
 local function StyleInFlight()
@@ -21,7 +23,7 @@ local function StyleInFlight()
 	if frame then
 		if not frame.isStyled then
 			frame:CreateBackdrop("Transparent")
-			frame.backdrop:BuiStyle("Outside")
+			frame.backdrop:BuiStyle()
 			frame.isStyled = true
 		end
 	end
@@ -42,13 +44,13 @@ end
 
 local function KalielsTracker()
 	if BUI:IsAddOnEnabled('!KalielsTracker') and E.db.benikui.general.benikuiStyle and E.db.benikui.skins.variousSkins.kt then
-		_G['!KalielsTrackerBackground']:BuiStyle('Outside')
+		_G['!KalielsTrackerBackground']:BuiStyle()
 	end
 end
 
 local function RareTracker()
 	if BUI:IsAddOnEnabled('RareTrackerCore') and E.db.benikui.general.benikuiStyle and E.db.benikui.skins.variousSkins.rt then
-		_G['RT']:BuiStyle('Outside')
+		_G['RT']:BuiStyle()
 	end
 end
 
@@ -60,7 +62,7 @@ local function TomTom()
 			MyFrameDropDownBackdrop:SetTemplate("Transparent")
 
 			if E.db.benikui.general.benikuiStyle then
-				MyFrameDropDownBackdrop:BuiStyle('Outside')
+				MyFrameDropDownBackdrop:BuiStyle()
 			end
 		end
 
@@ -69,7 +71,7 @@ local function TomTom()
 			TomTomWorldMapDropdownBackdrop:SetTemplate("Transparent")
 
 			if E.db.benikui.general.benikuiStyle then
-				TomTomWorldMapDropdownBackdrop:BuiStyle('Outside')
+				TomTomWorldMapDropdownBackdrop:BuiStyle()
 			end
 		end
 
@@ -78,13 +80,13 @@ local function TomTom()
 			TomTomDropdownBackdrop:SetTemplate("Transparent")
 
 			if E.db.benikui.general.benikuiStyle then
-				TomTomDropdownBackdrop:BuiStyle('Outside')
+				TomTomDropdownBackdrop:BuiStyle()
 			end
 		end
 
 		if TomTomTooltip then
 			if E.db.benikui.general.benikuiStyle then
-				TomTomTooltip:BuiStyle('Outside')
+				TomTomTooltip:BuiStyle()
 			end
 		end
 	end
@@ -94,17 +96,45 @@ local function Baganator() --credits go to plusmouse here https://github.com/Ben
 	if BUI:IsAddOnEnabled('Baganator') and E.db.benikui.general.benikuiStyle and E.db.benikui.skins.variousSkins.ba then
 		_G["Baganator"].API.Skins.RegisterListener(function(details)
 			if details.regionType == "ButtonFrame" and _G["Baganator"].API.Skins.GetCurrentSkin() == "elvui" then
-				details.region:BuiStyle('Outside')
+				details.region:BuiStyle()
 			end
 		end)
 		if _G["Baganator"].API.Skins.GetCurrentSkin() == "elvui" then
 			for _, details in ipairs(_G["Baganator"].API.Skins.GetAllFrames()) do
 				if details.regionType == "ButtonFrame" then
-					details.region:BuiStyle('Outside')
+					details.region:BuiStyle()
 				end
 			end
 		end
 	end
+end
+
+local function SkinAllTheThings()
+	local att = _G.AllTheThings
+
+	local attFrames = {
+		"MiniList",
+		"Prime",
+		"Tradeskills",
+	}
+
+	for _, frame in next, (attFrames) do
+		local skinFrame = att:GetWindow(frame)
+		if skinFrame and not skinFrame.IsSkinned then
+			S:HandleFrame(skinFrame)
+			S:HandleScrollBar(skinFrame.ScrollBar)
+			skinFrame:BuiStyle()
+			skinFrame.IsSkinned = true
+		end
+	end
+end
+
+local function AllTheThings()
+	if not (BUI:IsAddOnEnabled('AllTheThings') and E.db.benikui.general.benikuiStyle and E.db.benikui.skins.variousSkins.alltheThings) then return end
+
+	local att = _G.AllTheThings
+	att.AddEventHandler("OnReady", SkinAllTheThings)
+	att.AddEventHandler("OnWindowCreated", SkinAllTheThings)
 end
 
 function mod:LoD_AddOns(_, addon)
@@ -122,4 +152,5 @@ function mod:StyleAddons()
 	RareTracker()
 	TomTom()
 	Baganator()
+	AllTheThings()
 end
