@@ -1,8 +1,9 @@
 local BUI, E, L, V, P, G = unpack((select(2, ...)))
 local mod = BUI:GetModule('Widgetbars')
 local LSM = E.LSM
-local _G = _G
 
+local _G = _G
+local hooksecurefunc = hooksecurefunc
 local ipairs = ipairs
 
 local CreateFrame = CreateFrame
@@ -56,8 +57,6 @@ local function ScanForPreyWidget()
 	end
 end
 
--- this will grab the Prey widget (.progressState) to hide/show.
--- should add a similar thingy in the Maw bar
 local function FindBlizzardPreyFrame()
 	local container = _G.UIWidgetPowerBarContainerFrame
 	if not container then return end
@@ -75,6 +74,31 @@ local function GetPreyBarState()
 	local widgetInfo = C_UIWidgetManager_GetPreyHuntProgressWidgetVisualizationInfo(activePreyWidgetID)
 	if widgetInfo and widgetInfo.shownState ~= 0 then
 		return widgetInfo.progressState, widgetInfo.tooltip
+	end
+end
+
+local function HideContainerScenes()
+	local container = _G.UIWidgetPowerBarContainerFrame
+	if not container then return end
+
+	local scenes = { container.FrontModelScene, container.BackModelScene }
+	for _, scene in ipairs(scenes) do
+		if scene then
+			scene:Hide()
+			scene:SetAlpha(0)
+		end
+	end
+end
+
+local function RestoreContainerScenes()
+	local container = _G.UIWidgetPowerBarContainerFrame
+	if not container then return end
+
+	local scenes = { container.FrontModelScene, container.BackModelScene }
+	for _, scene in ipairs(scenes) do
+		if scene then
+			scene:SetAlpha(1)
+		end
 	end
 end
 
@@ -108,6 +132,8 @@ function mod:PreyBar_Update()
 	local displayState = state or (mod.preyPreviewActive and Enum.PreyHuntProgressState.Warm)
 
 	if displayState then
+		if not bar:IsShown() then bar:Show() end
+
 		bar:SetSize(db.width, db.height)
 
 		local color = PreyStateColor[displayState] or {0.5, 0.5, 0.5}
@@ -121,9 +147,18 @@ function mod:PreyBar_Update()
 
 		bar:SetValue(PreyStateStep[displayState] or 0)
 
-		if not bar:IsShown() then bar:Show() end
+		local blizzPreyFrame = FindBlizzardPreyFrame()
+		if blizzPreyFrame and blizzPreyFrame:IsShown() then
+			blizzPreyFrame:Hide()
+			blizzPreyFrame:SetAlpha(0)
+		end
+
+		if displayState == Enum.PreyHuntProgressState.Final then
+			HideContainerScenes()
+		end
 	else
 		bar:Hide()
+		RestoreContainerScenes()
 	end
 end
 
@@ -132,13 +167,6 @@ function mod:PreyBar_OnEvent()
 		ScanForPreyWidget()
 	end
 
-	local blizzPreyFrame = FindBlizzardPreyFrame()
-	if blizzPreyFrame and blizzPreyFrame:IsShown() then
-		blizzPreyFrame:Hide()
-		if blizzPreyFrame.GainProgressAnim then blizzPreyFrame.GainProgressAnim:Stop() end
-		if blizzPreyFrame.ShineFrame and blizzPreyFrame.ShineFrame.Anim then blizzPreyFrame.ShineFrame.Anim:Stop() end
-		if blizzPreyFrame.TransitionAnim then blizzPreyFrame.TransitionAnim:Stop() end
-	end
 	mod:PreyBar_Update()
 end
 
@@ -182,6 +210,7 @@ function mod:LoadPrey()
 
 	mod:RegisterEvent("PLAYER_ENTERING_WORLD", mod.PreyBar_OnEvent)
 	mod:RegisterEvent("UPDATE_UI_WIDGET", mod.PreyBar_OnEvent)
+	mod:RegisterEvent("UPDATE_ALL_UI_WIDGETS", mod.PreyBar_OnEvent)
 
 	ScanForPreyWidget()
 	mod:PreyBar_Update()

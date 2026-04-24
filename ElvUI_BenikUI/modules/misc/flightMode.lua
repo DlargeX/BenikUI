@@ -167,28 +167,6 @@ function mod:SetFrameParent()
 	end
 end
 
-local isInFlightLoaded = false
-
-function mod:SkinInFlight()
-	if not isInFlightLoaded then
-		if not BUI.IF then
-			LoadAddOn("InFlight") -- LOD addon
-			isInFlightLoaded = true
-		end
-	end
-
-	local frame = _G["InFlightBar"]
-	if frame then
-		if not frame.isSkinned then
-			frame:CreateBackdrop('Transparent', true, true)
-			frame.backdrop:SetOutside(frame, 2, 2)
-			frame.backdrop:SetBackdropBorderColor(.3, .3, .3, 1)
-			frame.backdrop:CreateWideShadow()
-			frame.isSkinned = true
-		end
-	end
-end
-
 local DCR = _G.LibStub('AceAddon-3.0'):GetAddon('Decursive', true)
 local function Decursive(hide)
 	if not DCR then return end
@@ -198,6 +176,12 @@ local function Decursive(hide)
 		if DCR.profile.ShowDebuffsFrame == true then
 			_G.DcrMUFsContainer:Show()
 		end
+	end
+end
+
+local function CenteredCDM()
+	if BUI:IsAddOnEnabled('CooldownManagerCentered') then
+		return true
 	end
 end
 
@@ -223,6 +207,7 @@ local AddonsToHide = {
 	{'!KalielsTracker','KT_ProfessionsRecipeTracker'},
 	{'!KalielsTracker','!KalielsTrackerHeaderButtons'},
 	{'RareTrackerCore','RT'},
+	{'MinimapButtonButton','MinimapButtonButtonButton'},
 }
 
 local AllTheThingsFrames = {}
@@ -370,7 +355,7 @@ function mod:SetFlightMode(status)
 		end
 
 		-- Cooldown Manager
-		if GetCVar("cooldownViewerEnabled") == "1" then
+		if CenteredCDM() or GetCVar("cooldownViewerEnabled") == "1" then
 			if _G.EssentialCooldownViewer then
 				_G.EssentialCooldownViewer:Hide()
 			end
@@ -417,7 +402,6 @@ function mod:SetFlightMode(status)
 		mod.coordsTimer = mod:ScheduleRepeatingTimer('UpdateCoords', 0.2)
 		mod.fpsTimer = mod:ScheduleRepeatingTimer('UpdateFps', 1)
 
-		mod:SkinInFlight()
 	elseif(mod.inFlightMode) then
 		mod.inFlightMode = false
 		_G.MainMenuBarVehicleLeaveButton:SetParent(_G.UIParent)
@@ -535,7 +519,7 @@ function mod:SetFlightMode(status)
 		end
 
 		-- Cooldown Manager
-		if GetCVar("cooldownViewerEnabled") == "1" then
+		if CenteredCDM() or GetCVar("cooldownViewerEnabled") == "1" then
 			if _G.EssentialCooldownViewer then
 				_G.EssentialCooldownViewer:Show()
 			end
@@ -659,10 +643,10 @@ end
 
 function mod:Initialize()
 	local db = E.db.benikui.colors
-	mod.FlightMode = CreateFrame("Frame", "BenikUIFlightModeFrame", UIParent)
+	mod.FlightMode = CreateFrame("Frame", "BenikUIFlightModeFrame", _G.UIParent)
 	mod.FlightMode:SetFrameLevel(1)
 	mod.FlightMode:SetFrameStrata('BACKGROUND')
-	mod.FlightMode:SetAllPoints(UIParent)
+	mod.FlightMode:SetAllPoints(_G.UIParent)
 	mod.FlightMode:Hide()
 
 	-- Top frame
@@ -815,11 +799,13 @@ function mod:Initialize()
 	mod.FlightMode.bottom.wowlogo:SetFrameStrata("MEDIUM")
 	mod.FlightMode.bottom.wowlogo:Size(300, 150)
 	mod.FlightMode.bottom.wowlogo.tex = mod.FlightMode.bottom.wowlogo:CreateTexture(nil, 'OVERLAY')
+
 	local currentExpansionLevel = GetClampedCurrentExpansionLevel();
 	local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel);
 	if expansionDisplayInfo then
 		mod.FlightMode.bottom.wowlogo.tex:SetTexture(expansionDisplayInfo.logo)
 	end
+
 	mod.FlightMode.bottom.wowlogo.tex:SetInside()
 	mod.FlightMode.bottom.wowlogo:Hide()
 

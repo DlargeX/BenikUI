@@ -67,6 +67,9 @@ L['iLevel'] = true --No need to translate
 L['Show item level per slot, on the character info frame'] = "Zeigt das Gegenstandslevel pro Slot, im Spielerfenster"
 L['Inside the item slot'] = "Innerhalb des Ausrüstungsplatz"
 L['Outside the item slot'] = "Ausserhalb des Ausrüstungsplatz"
+L['Chat EditBox'] = true
+L['Position'] = true
+L['Position of the Chat EditBox, if datatexts are disabled this will be forced to be above chat.'] = true
 
 -- Flight mode
 L['Flight Mode'] = "Flugmodus"
@@ -188,6 +191,7 @@ L['Update Throttle'] = "Aktualisierung drosseln"
 L['Use DataTexts font'] = "Benutze Infotext Schriftart"
 L['Use Faction Colors on Bars'] = "Benutze Fraktionsfarben auf Leisten"
 L['Use Faction Colors on Text'] = "Benutze Fraktionsfarben auf Texten"
+L['Hide in Housing'] = true
 
 -- Items
 L['Items'] = "Gegenstände"

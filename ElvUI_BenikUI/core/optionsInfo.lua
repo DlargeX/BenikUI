@@ -71,6 +71,7 @@ local DONATORS = {
 	'tegh 3x Coffees',
 	'Samuel I.',
 	'Jochen S.',
+	'Fafnyir',
 }
 tsort(DONATORS, function(a, b) return E:StripString(a) < E:StripString(b) end)
 local DONATOR_STRING = tconcat(DONATORS, ", ")
@@ -79,10 +80,10 @@ local PATRONS = {
 	'thurin',
 	'cry1n',
 	'Roshne',
-	'Valerie K.',
-	'CHRONiC',
-	'Fafnyir',
+	'Wulfsie',
 	'Praeses',
+	'Mykey',
+	'Valerie K.',
 }
 tsort(PATRONS, function(a, b) return E:StripString(a) < E:StripString(b) end)
 local PATRONS_STRING = tconcat(PATRONS, ", ")
@@ -119,6 +120,7 @@ local NITRO = {
 	'Fara0on',
 	'RavenKnight',
 	'|cffff005athurin|r',
+	'Praeses',
 }
 tsort(NITRO, function(a, b) return E:StripString(a) < E:StripString(b) end)
 local NITRO_STRING = tconcat(NITRO, ", ")
